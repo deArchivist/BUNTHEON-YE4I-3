@@ -1,0 +1,221 @@
+/* Soft shadows */
+.shadow-xs {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.shadow-sm {
+  box-shadow: var(--box-shadow-sm);
+}
+
+.shadow-md {
+  box-shadow: var(--box-shadow-md);
+}
+
+.shadow-lg {
+  box-shadow: var(--box-shadow-lg);
+}
+
+.shadow-xl {
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.06), 0 12px 22px rgba(0, 0, 0, 0.08);
+}
+
+/* Glow effects */
+.glow-primary {
+  box-shadow: 0 0 12px rgba(172, 184, 247, 0.25);
+}
+
+.glow-secondary {
+  box-shadow: 0 0 12px rgba(219, 193, 247, 0.25);
+}
+
+.glow-accent {
+  box-shadow: 0 0 12px rgba(153, 183, 240, 0.25);
+}
+
+.glow-error {
+  box-shadow: 0 0 12px rgba(253, 164, 164, 0.25);
+}
+
+.glow-success {
+  box-shadow: 0 0 12px rgba(150, 255, 150, 0.25);
+}
+
+/* Layer backgrounds */
+.bg-base {
+  background-color: #ffffff;
+}
+
+.bg-raised {
+  background-color: #fcfcfc;
+}
+
+.bg-overlay {
+  background-color: #fafafa;
+}
+
+.bg-sunken {
+  background-color: #f8f8f8;
+}
+
+/* Hover effects */
+.hover-lift {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--box-shadow-md);
+}
+
+.hover-glow-primary:hover {
+  box-shadow: 0 0 12px rgba(172, 184, 247, 0.35);
+}
+
+.hover-glow-secondary:hover {
+  box-shadow: 0 0 12px rgba(219, 193, 247, 0.35);
+}
+
+/* Focus effects */
+.focus-ring-primary:focus {
+  box-shadow: 0 0 0 2px rgba(172, 184, 247, 0.2);
+  outline: none;
+}
+
+/* Remove focus outlines */
+.no-focus-outline:focus,
+.no-focus-outline *:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Disable the default focus rings in browsers */
+.no-focus-outline {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Animation keyframes */
+@keyframes gentle-pulse {
+  0% {
+    box-shadow: 0 0 8px rgba(172, 184, 247, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 12px rgba(172, 184, 247, 0.35);
+  }
+  100% {
+    box-shadow: 0 0 8px rgba(172, 184, 247, 0.2);
+  }
+}
+
+.pulse-glow {
+  animation: gentle-pulse 2s infinite;
+}
+
+/* Effects and animations for BUNTHEON application */
+
+/* Button hover effects */
+.button-hover-effect {
+  transition: all 0.2s ease;
+}
+
+.button-hover-effect:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--box-shadow-sm);
+}
+
+/* Card hover effects */
+.card-hover-effect {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-hover-effect:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--box-shadow-md);
+}
+
+/* Focus effects */
+.focus-effect:focus-visible {
+  outline: 2px solid var(--mantine-color-primary-2);
+  outline-offset: 2px;
+}
+
+/* Fade effects */
+.fade-in-effect {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Slide effects */
+.slide-in-from-bottom {
+  animation: slideInFromBottom 0.3s ease-out;
+}
+
+@keyframes slideInFromBottom {
+  from { 
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Pulse effect */
+.pulse-effect {
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* Glow effects */
+.primary-glow {
+  box-shadow: 0 0 12px rgba(172, 184, 247, 0.25);
+}
+
+.error-glow {
+  box-shadow: 0 0 12px rgba(253, 164, 164, 0.25);
+}
+
+.success-glow {
+  box-shadow: 0 0 12px rgba(150, 255, 150, 0.25);
+}
+
+/* Ripple effect */
+.ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple::after {
+  content: "";
+  display: block;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  background-image: radial-gradient(circle, #000 10%, transparent 10.01%);
+  background-repeat: no-repeat;
+  background-position: 50%;
+  transform: scale(10, 10);
+  opacity: 0;
+  transition: transform 0.5s, opacity 0.5s;
+}
+
+.ripple:active::after {
+  transform: scale(0, 0);
+  opacity: 0.1;
+  transition: 0s;
+}

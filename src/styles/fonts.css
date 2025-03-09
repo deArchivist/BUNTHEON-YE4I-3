@@ -1,0 +1,49 @@
+/* Khmer Font Support */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer:wght@400;500;700&display=swap');
+
+/* Font styles for the application */
+
+/* Khmer text styles */
+.khmer-text {
+  font-family: 'Khmer OS', 'Noto Sans Khmer', sans-serif;
+  line-height: 1.7;
+}
+
+/* Apply Khmer font to all chat responses */
+.chat-message-content {
+  font-family: 'Noto Sans Khmer', sans-serif, system-ui;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.chat-message-content p {
+  margin-bottom: 0.75rem;
+}
+
+.chat-message-content p:last-child {
+  margin-bottom: 0;
+}
+
+.chat-message-content pre {
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  background-color: rgba(0, 0, 0, 0.05);
+  overflow-x: auto;
+}
+
+.chat-message-content code {
+  font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+  font-size: 0.85rem;
+}
+
+/* Style for LaTeX equations */
+.chat-message-content .katex {
+  font-size: 1.1em;
+}
+
+.chat-message-content .katex-display {
+  margin: 0.75rem 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}

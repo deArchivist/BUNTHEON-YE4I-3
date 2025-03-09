@@ -1,0 +1,165 @@
+/* PersonaSelector component styles */
+.persona-selector-option {
+  transition: all 0.2s ease;
+}
+
+.persona-selector-option[dataSelected="true"] {
+  background-color: var(--mantine-color-primary-1);
+  color: var(--mantine-color-primary-9);
+}
+
+.persona-selector-option[dataHovered="true"] {
+  background-color: var(--mantine-color-gray-0);
+}
+
+.persona-selector-dropdown {
+  border: 1px solid var(--mantine-color-gray-2);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* Component-specific styles for BUNTHEON application */
+
+/* Card component styles */
+.enhanced-card {
+  border-radius: var(--card-border-radius);
+  padding: var(--card-padding);
+  background-color: white;
+  box-shadow: var(--box-shadow-sm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.enhanced-card:hover {
+  box-shadow: var(--box-shadow-md);
+  transform: translateY(-2px);
+}
+
+/* Button styles */
+.enhanced-button {
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.enhanced-button:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--box-shadow-sm);
+}
+
+.enhanced-button:active {
+  transform: translateY(0);
+}
+
+/* Input field styles */
+.enhanced-input {
+  border-radius: 0.5rem;
+  border: 1px solid var(--mantine-color-gray-3);
+  transition: all 0.2s ease;
+}
+
+.enhanced-input:focus {
+  border-color: var(--mantine-color-primary-5);
+  box-shadow: 0 0 0 2px var(--mantine-color-primary-1);
+}
+
+/* Message bubbles */
+.message-bubble {
+  border-radius: 1rem;
+  padding: 0.75rem 1rem;
+  max-width: 85%;
+}
+
+.user-bubble {
+  background-color: var(--mantine-color-primary-0);
+  border: 1px solid var(--mantine-color-primary-3);
+  align-self: flex-end;
+}
+
+.ai-bubble {
+  background-color: white;
+  border: 1px solid var(--mantine-color-gray-3);
+  align-self: flex-start;
+}
+
+/* Badge styles */
+.tag-badge {
+  border-radius: 1rem;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* Navigation item styles */
+.nav-item {
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.nav-item-active {
+  background-color: var(--mantine-color-primary-0);
+  color: var(--mantine-color-primary-7);
+}
+
+/* Filter panel */
+.filter-panel {
+  border-radius: var(--card-border-radius);
+  background-color: white;
+  box-shadow: var(--box-shadow-md);
+  padding: 1rem;
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Chat loading indicators */
+.chat-loading-indicator {
+  display: flex;
+  gap: 6px;
+  padding: 8px 0;
+}
+
+.chat-loading-indicator span {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+/* Feature cards on home page */
+.feature-card {
+  border-radius: var(--card-border-radius);
+  padding: var(--card-padding);
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.2s ease;
+  height: 100%;
+}
+
+.feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--box-shadow-md);
+}
+
+.feature-card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  margin-bottom: 1rem;
+}
+
+.feature-card-title {
+  font-weight: 600;
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.feature-card-description {
+  color: var(--mantine-color-gray-6);
+  font-size: 0.875rem;
+}
