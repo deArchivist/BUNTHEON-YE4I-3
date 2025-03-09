@@ -2,7 +2,8 @@ import { GoogleGenerativeAI, GenerativeModel, GenerationConfig, SafetySetting, H
 import { ENV } from "../config/env";
 
 // Initialize the Google Generative AI with your API key or use a fallback for demo mode
-const genAI = new GoogleGenerativeAI(ENV.GEMINI_API_KEY || 'demo_mode');
+const genAI = new GoogleGenerativeAI(ENV.GEMINI_API_KEY);
+console.log(ENV.GEMINI_API_KEY);
 
 // Default configuration for generation
 const defaultConfig: GenerationConfig = {
