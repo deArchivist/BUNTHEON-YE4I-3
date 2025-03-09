@@ -1,21 +1,23 @@
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
-const compression = require('compression');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Enable gzip compression
-app.use(compression());
+// Middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// Serve static files from the React build
-app.use(express.static(path.join(__dirname, 'build')));
+// Serve static files
+app.use(express.static(path.join(__dirname, 'public')));
 
-// For any request that doesn't match the static files, send the index.html
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+// Routes
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+// Start server
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });

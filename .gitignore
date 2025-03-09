@@ -7,12 +7,16 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-# Build output
-/build
+# Build outputs
 /dist
+/build
+/.next
 
 # Dependencies
 /node_modules
+/npm-debug.log
+/yarn-error.log
+/yarn-debug.log
 
 # Environment variables
 .env
@@ -26,17 +30,14 @@ lerna-debug.log*
 *.seed
 
 # Editor directories and files
-.vscode/*
-!.vscode/extensions.json
 .idea
-.DS_Store
+.vscode
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
-*.swp
-*.swo
 
 # OS files
 Thumbs.db
+.DS_Store
