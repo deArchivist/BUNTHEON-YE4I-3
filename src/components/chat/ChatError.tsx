@@ -45,4 +45,4 @@ const ChatError: React.FC<ChatErrorProps> = ({ message, onRetry }) => {
   );
 };
 
-export default ChatError;
+export default React.memo(ChatError);
