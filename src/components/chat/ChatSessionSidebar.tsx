@@ -12,7 +12,7 @@ import {
   TextInput,
   Divider,
   Box,
-  Modal // Added Modal import
+  Modal
 } from '@mantine/core';
 import { 
   X, 
@@ -22,8 +22,7 @@ import {
   MessageCircle, 
   Check, 
   ChevronRight, 
-  ChevronDown,
-  TrashIcon // Add TrashIcon
+  ChevronDown
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useChatContext, ChatSession } from '../../contexts/ChatContext';
@@ -66,35 +65,18 @@ const ChatSessionSidebar: React.FC<ChatSessionSidebarProps> = ({ isOpen, onClose
     createNewChat,
     renameChatSession,
     deleteChatSession,
-    clearAllChats // Add the new function
+    clearAllChats
   } = useChatContext();
   
   const [editingChatId, setEditingChatId] = useState<string | null>(null);
   const [newChatName, setNewChatName] = useState('');
-  const [expandedSection, setExpandedSection] = useState<'active' | 'archived' | null>('active');
-  const [showClearConfirmation, setShowClearConfirmation] = useState(false); // Add state for confirmation modal
+  const [expandedSection, setExpandedSection] = useState<'active' | null>('active');
+  const [showClearConfirmation, setShowClearConfirmation] = useState(false);
   
   // Filter chats to only show those for the selected persona
   const personaChats = chatSessions.filter(chat => 
     chat && chat.personaId === selectedPersona.id
-  );
-  
-  // Safely handle active chats (not explicitly archived)
-  const activeChats = personaChats
-    .filter(chat => {
-      // @ts-ignore - Handle archived property that might not be in the interface
-      const archived = chat.archived;
-      return archived === false || archived === undefined;
-    })
-    .sort(sortByUpdatedAt);
-  
-  // Only include chats that are explicitly marked as archived
-  const archivedChats = personaChats
-    .filter(chat => {
-      // @ts-ignore - Handle archived property that might not be in the interface
-      return chat.archived === true;
-    })
-    .sort(sortByUpdatedAt);
+  ).sort(sortByUpdatedAt);
   
   const handleStartEditing = (chat: ChatSession) => {
     setEditingChatId(chat.id);
@@ -121,17 +103,6 @@ const ChatSessionSidebar: React.FC<ChatSessionSidebarProps> = ({ isOpen, onClose
     }
   };
   
-  const formatDateShort = (date: any) => {
-    try {
-      const dateObj = typeof date === 'number' || typeof date === 'string' 
-        ? new Date(date) 
-        : date;
-      return format(dateObj, 'MMM d, yyyy');
-    } catch (e) {
-      return 'Unknown date';
-    }
-  };
-  
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       handleSaveEdit();
@@ -147,7 +118,7 @@ const ChatSessionSidebar: React.FC<ChatSessionSidebarProps> = ({ isOpen, onClose
     onClose(); // Close sidebar after creating a new chat
   };
   
-  const toggleSectionExpansion = (section: 'active' | 'archived') => {
+  const toggleSectionExpansion = (section: 'active') => {
     setExpandedSection(prev => prev === section ? null : section);
   };
   
@@ -163,7 +134,6 @@ const ChatSessionSidebar: React.FC<ChatSessionSidebarProps> = ({ isOpen, onClose
   const handleClearAllChats = () => {
     clearAllChats();
     setShowClearConfirmation(false);
-    // No need to close sidebar after clearing
   };
   
   return (
@@ -214,19 +184,19 @@ const ChatSessionSidebar: React.FC<ChatSessionSidebarProps> = ({ isOpen, onClose
                 <ChevronDown size={18} /> : 
                 <ChevronRight size={18} />
               }
-              <Text fw={600}>Active Conversations</Text>
+              <Text fw={600}>Conversations</Text>
             </Group>
-            <Text size="sm" c="dimmed">{activeChats.length}</Text>
+            <Text size="sm" c="dimmed">{personaChats.length}</Text>
           </Group>
           
           {expandedSection === 'active' && (
             <Stack gap="xs">
-              {activeChats.length === 0 ? (
+              {personaChats.length === 0 ? (
                 <Text size="sm" c="dimmed" ta="center" py="sm">
-                  No active conversations
+                  No conversations
                 </Text>
               ) : (
-                activeChats.map(chat => (
+                personaChats.map(chat => (
                   <Card 
                     key={chat.id}
                     withBorder
@@ -304,77 +274,8 @@ const ChatSessionSidebar: React.FC<ChatSessionSidebarProps> = ({ isOpen, onClose
           )}
         </div>
         
-        {/* Divider */}
-        <Divider my="xs" />
-        
-        {/* Archived chats section */}
-        <div>
-          <Group 
-            justify="space-between" 
-            onClick={() => toggleSectionExpansion('archived')}
-            className="cursor-pointer"
-            mb="xs"
-          >
-            <Group gap="xs">
-              {expandedSection === 'archived' ? 
-                <ChevronDown size={18} /> : 
-                <ChevronRight size={18} />
-              }
-              <Text fw={600}>Archived Conversations</Text>
-            </Group>
-            <Text size="sm" c="dimmed">{archivedChats.length}</Text>
-          </Group>
-          
-          {expandedSection === 'archived' && (
-            <Stack gap="xs">
-              {archivedChats.length === 0 ? (
-                <Text size="sm" c="dimmed" ta="center" py="sm">
-                  No archived conversations
-                </Text>
-              ) : (
-                archivedChats.map(chat => (
-                  <Card 
-                    key={chat.id}
-                    withBorder
-                    p="sm"
-                    radius="md"
-                    className="hover:bg-gray-50"
-                  >
-                    <div onClick={() => {
-                      setCurrentChatId(chat.id);
-                      onClose();
-                    }}>
-                      <Group justify="space-between" wrap="nowrap">
-                        <Text fw={500} lineClamp={1} c="dimmed">
-                          {chat.name}
-                        </Text>
-                        <ActionIcon 
-                          size="sm" 
-                          variant="subtle" 
-                          color="red"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            if (window.confirm("Are you sure you want to delete this chat?")) {
-                              deleteChatSession(chat.id);
-                            }
-                          }}
-                        >
-                          <Trash2 size={14} />
-                        </ActionIcon>
-                      </Group>
-                      <Text size="xs" c="dimmed">
-                        {chat.updatedAt ? formatDateShort(chat.updatedAt) : 'No date'}
-                      </Text>
-                    </div>
-                  </Card>
-                ))
-              )}
-            </Stack>
-          )}
-        </div>
-        
         {/* Empty state */}
-        {activeChats.length === 0 && archivedChats.length === 0 && (
+        {personaChats.length === 0 && (
           <Box py="xl" ta="center">
             <ThemeIcon size="xl" radius="xl" color="gray" variant="light" mx="auto" mb="md">
               <MessageCircle size={24} />

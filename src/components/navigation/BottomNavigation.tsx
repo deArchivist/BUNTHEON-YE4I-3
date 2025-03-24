@@ -1,7 +1,7 @@
 import React from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { Group, UnstyledButton, Center, Stack, Text, rem } from '@mantine/core';
-import { Home, BrainCircuit, TextSearch, Library, Calendar, Clock, Sparkles } from 'lucide-react';
+import { Home, BrainCircuit, TextSearch, Library, Calendar, Clock } from 'lucide-react';
 import { getShadow } from '../../theme/mantineTheme';
 
 const BottomNavigation: React.FC = () => {
@@ -12,7 +12,6 @@ const BottomNavigation: React.FC = () => {
   const navItems = [
     { path: '/', icon: Home, label: 'Home' },
     { path: '/ai-chat', icon: BrainCircuit, label: 'Chat' },
-    { path: '/prompts', icon: Sparkles, label: 'Prompts' }, // Added new Prompts item
     { path: '/resources', icon: Library, label: 'Resources' },
     { path: '/reminders', icon: Calendar, label: 'Reminders' },
     { path: '/pomodoro', icon: Clock, label: 'Pomodoro' }

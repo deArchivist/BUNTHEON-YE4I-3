@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Box, Title, Group, ActionIcon, Paper, Stack, ScrollArea } from '@mantine/core';
-import { RefreshCw, List, AlertCircle } from 'lucide-react';
+import { Box, Title, Group, ActionIcon, Paper, Stack, ScrollArea, Button } from '@mantine/core';
+import { RefreshCw, List, AlertCircle, Sparkles } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import geminiService from '../services/geminiService';
 import { useChatContext } from '../contexts/ChatContext';
 import { ChatMessage, ChatLoadingMessage } from '../components/chat/ChatMessage';
@@ -205,9 +206,18 @@ const AIChat: React.FC = () => {
   return (
     <Stack h="calc(100vh - 8rem)" gap="md">
       {/* Header section */}
-      <Group justify="space-between">
-        <Title order={2} size="h4">Bun Theon AI Chat</Title>
-        <Group gap="xs"> {/* Fix: Changed 'spacing' to 'gap' */}
+      <Group justify="space-between" mb="md">
+        <Title order={3}>AI Chat</Title>
+        <Group>
+          <Button 
+            component={Link} 
+            to="/prompts" 
+            variant="subtle" 
+            size="compact-sm" 
+            leftSection={<Sparkles size={16} />}
+          >
+            Prompts
+          </Button>
           <ActionIcon 
             variant="subtle" 
             color="gray" 
