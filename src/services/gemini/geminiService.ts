@@ -68,16 +68,10 @@ class GeminiService {
   /**
    * Get or create a chat session for a specific chat ID
    */
-  private async getOrCreateChatSession(chatId: string, personaId: string, systemPrompt: string): Promise<any> {
-    // If we have an existing session for this chat ID and the same persona
+  private async getOrCreateChatSession(chatId: string, systemPrompt: string): Promise<any> {
+    // If we have an existing session for this chat ID
     if (this.chatSessions.has(chatId)) {
       const session = this.chatSessions.get(chatId)!;
-      
-      // If the persona changed, create a new session
-      if (session.personaId !== personaId) {
-        console.log(`Persona changed from ${session.personaId} to ${personaId}, creating new session`);
-        return this.createNewChatSession(chatId, personaId, systemPrompt);
-      }
       
       // Update the last active timestamp
       session.lastActive = Date.now();
@@ -86,14 +80,14 @@ class GeminiService {
     }
     
     // Create a new session if one doesn't exist
-    return this.createNewChatSession(chatId, personaId, systemPrompt);
+    return this.createNewChatSession(chatId, systemPrompt);
   }
   
   /**
    * Create a new chat session
    */
-  private async createNewChatSession(chatId: string, personaId: string, systemPrompt: string): Promise<any> {
-    console.log(`Creating new chat session for ${chatId} with persona ${personaId}`);
+  private async createNewChatSession(chatId: string, systemPrompt: string): Promise<any> {
+    console.log(`Creating new chat session for ${chatId}`);
     
     // Create the chat session
     const chat = this.model.startChat({
@@ -109,7 +103,6 @@ class GeminiService {
     // Store the session
     this.chatSessions.set(chatId, {
       chat,
-      personaId,
       lastActive: Date.now(),
     });
     
@@ -207,7 +200,6 @@ class GeminiService {
    * @param chatId Chat session ID
    * @param messages Chat message history
    * @param systemPrompt System prompt for the assistant
-   * @param personaId Persona ID
    * @param callbacks Callbacks for streaming events
    * @param config Optional generation config
    * @returns Full response text
@@ -216,11 +208,10 @@ class GeminiService {
     chatId: string,
     messages: ChatMessage[],
     systemPrompt: string,
-    personaId: string,
     callbacks: StreamCallbacks,
     config?: Partial<GenerationConfig>
   ) {
-    console.log(`Starting streamChatWithHistory for chat ${chatId}, persona ${personaId}`);
+    console.log(`Starting streamChatWithHistory for chat ${chatId}`);
     
     // Cancel any ongoing stream before starting a new one
     this.cancelStream();
@@ -248,8 +239,8 @@ class GeminiService {
         callbacks.onStart();
       }
       
-      // Get or create a chat session for this chat ID
-      const chat = await this.getOrCreateChatSession(chatId, personaId, systemPrompt);
+      // Get or create a chat session for this chat ID using a default persona ID
+      const chat = await this.getOrCreateChatSession(chatId, systemPrompt);
       
       // Prune the message history to fit token limits
       const prunedMessages = pruneMessageHistory(messages, systemPrompt);
@@ -311,7 +302,7 @@ class GeminiService {
           this.chatSessions.delete(chatId);
           
           // Create a new session with just the system prompt
-          const newChat = await this.createNewChatSession(chatId, personaId, systemPrompt);
+          const newChat = await this.createNewChatSession(chatId, systemPrompt);
           
           // Send only the last user message
           console.log("Retrying with only the last user message");

@@ -19,7 +19,6 @@ export type StreamCallbacks = {
 // Chat session for managing persistent conversations
 export type ChatSession = {
   chat: any; // GenerativeModel.startChat result
-  personaId: string;
   lastActive: number;
 };
 
