@@ -7,7 +7,7 @@ import { RemindersProvider } from './contexts/RemindersContext';
 import { PomodoroProvider } from './contexts/PomodoroContext';
 import Layout from './components/Layout';
 import Home from './pages/Home';
-import AIChat from './pages/AIChat';
+import AIChat from './pages/ChatPage';
 import PromptLibrary from './pages/PromptLibrary';
 import Dictionary from './pages/Dictionary';
 import ExamPapers from './pages/ExamPapers';
@@ -15,6 +15,7 @@ import RemindersWithContext from './pages/RemindersWithContext';
 import Pomodoro from './pages/Pomodoro';
 import Resources from './pages/Resources';
 import { theme } from './theme/mantineTheme';
+import ChatPage from './pages/ChatPage';
 
 // Import global styles
 import './styles/global.css';
@@ -38,6 +39,7 @@ function App() {
                       <Route path="resources" element={<Resources />} />
                       <Route path="reminders" element={<RemindersWithContext />} />
                       <Route path="pomodoro" element={<Pomodoro />} />
+                      <Route path="chat" element={<ChatPage />} />
                     </Route>
                   </Routes>
                 </PomodoroProvider>

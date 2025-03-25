@@ -2,9 +2,11 @@
 @keyframes fadeIn {
   from {
     opacity: 0;
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -54,13 +56,16 @@
 
 @keyframes pulse {
   0% {
-    transform: scale(1);
+    transform: scale(0.8);
+    opacity: 0.5;
   }
   50% {
-    transform: scale(1.05);
+    transform: scale(1.2);
+    opacity: 1;
   }
   100% {
-    transform: scale(1);
+    transform: scale(0.8);
+    opacity: 0.5;
   }
 }
 
@@ -105,6 +110,18 @@
 
 .animate-pulse {
   animation: pulse 1.5s ease infinite;
+}
+
+.dot-1, .dot-2, .dot-3 {
+  animation: pulse 1s infinite;
+}
+
+.dot-2 {
+  animation-delay: 0.2s;
+}
+
+.dot-3 {
+  animation-delay: 0.4s;
 }
 
 /* Animation Delays */
@@ -195,4 +212,8 @@
   width: 32px;
   height: 32px;
   border-width: 4px;
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
 }
