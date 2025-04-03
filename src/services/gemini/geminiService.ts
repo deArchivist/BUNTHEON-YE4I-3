@@ -68,6 +68,9 @@ export class GeminiService {
    * Get or create a chat session
    */
   private async getOrCreateChatSession(sessionId: string, systemPrompt?: string): Promise<ChatSession> {
+    // Log system prompt received
+    console.log('getOrCreateChatSession received systemPrompt:', systemPrompt ? systemPrompt.substring(0, 50) + '...' : 'empty');
+    
     // Return existing active session if available
     if (this.chatSessions.has(sessionId)) {
       const session = this.chatSessions.get(sessionId)!;
@@ -93,21 +96,63 @@ export class GeminiService {
     }
     
     try {
-      const chat = this.model.startChat({
+      // Format the systemPrompt properly for the API
+      const chatOptions: any = {
         history: [],
         generationConfig: {
           maxOutputTokens: this.maxOutputTokens,
           temperature: this.temperature
         }
-      });
-      
-      const session: ChatSession = {
-        chat,
-        lastActive: Date.now()
       };
+
+      // Only add systemInstruction if we have a prompt
+      if (systemPrompt) {
+        console.log('Adding full system prompt with length:', systemPrompt.length);
+        
+        // Use the exact full prompt provided by the user
+        // FORMAT FIX: The API expects an object with parts, not a string
+        chatOptions.systemInstruction = {
+          role: "system",
+          parts: [{ text: systemPrompt }]
+        };
+        
+        console.log('System instruction set with full prompt');
+      }
+
+      try {
+        const chat = this.model.startChat(chatOptions);
+        
+        const session: ChatSession = {
+          chat,
+          lastActive: Date.now()
+        };
+        
+        this.chatSessions.set(sessionId, session);
+        return session;
+      } catch (error) {
+        // If the full prompt fails, try with a fallback shorter prompt
+        console.error('Error creating chat with full system prompt, trying with shorter version:', error);
+        
+        // Create a shortened fallback prompt
+        const shortenedPrompt = `You are Mr. Bun Theon, an expert Khmer science tutor using the Feynman Technique. Always respond in Khmer language. Explain concepts step-by-step. Use LaTeX for math formulas.`;
+        
+        chatOptions.systemInstruction = {
+          role: "system",
+          parts: [{ text: shortenedPrompt }]
+        };
+        
+        console.log('Falling back to shorter system prompt');
+        const chat = this.model.startChat(chatOptions);
+        
+        const session: ChatSession = {
+          chat,
+          lastActive: Date.now()
+        };
+        
+        this.chatSessions.set(sessionId, session);
+        return session;
+      }
       
-      this.chatSessions.set(sessionId, session);
-      return session;
     } catch (error) {
       console.error('Failed to create chat session:', error);
       throw new Error('Failed to create chat session');
@@ -120,9 +165,12 @@ export class GeminiService {
   public async streamChatWithHistory(
     sessionId: string,
     messages: ChatMessage[],
-    systemPrompt?: string,
+    systemPrompt?: string, // Change to a regular string parameter
     callbacks: StreamCallbacks = {}
   ): Promise<string> {
+    // Log received system prompt
+    console.log('streamChatWithHistory received systemPrompt:', systemPrompt ? systemPrompt.substring(0, 50) + '...' : 'empty');
+    
     // Cancel any existing stream
     this.cancelStream();
     
