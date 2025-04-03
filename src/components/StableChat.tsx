@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Box, Group, Text, ActionIcon, Stack, Title, Alert, Paper } from '@mantine/core';
+import { Box, Group, Text, ActionIcon, Stack, Title, Alert, Paper, Button } from '@mantine/core';
 import { Send, Trash, Bot, User, RefreshCw, AlertTriangle, ChevronDown } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkMath from 'remark-math';
@@ -7,6 +7,7 @@ import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css';
 import '../styles/stableChat.css';
 import geminiService from '../services/gemini';
+import { ChatMessage as GeminiChatMessage } from '../services/gemini/types';
 
 // Define types for messages
 type MessageRole = 'user' | 'assistant';
@@ -15,7 +16,6 @@ interface Message {
   id: string;
   role: MessageRole;
   content: string;
-  // New properties for stable rendering
   containsLatex?: boolean;
   renderComplete?: boolean;
 }
@@ -29,15 +29,13 @@ interface StableChatProps {
   showDemoWarning?: boolean;
 }
 
-// Utility function to detect Khmer text
+// Utility functions for text detection
 const containsKhmerText = (text: string): boolean => {
   const khmerRegex = /[\u1780-\u17FF]/;
   return khmerRegex.test(text);
 };
 
-// Utility function to detect LaTeX content
 const containsLatex = (text: string): boolean => {
-  // Comprehensive LaTeX pattern detection
   return /(\$\$|\$|\\begin\{|\\frac|\\sum|\\int|\\lim|\\alpha|\\beta|\\gamma|\\delta)/.test(text);
 };
 
@@ -49,46 +47,38 @@ const StableChat: React.FC<StableChatProps> = ({
   initialMessages = [],
   showDemoWarning = false
 }) => {
-  // Core state
+  // Core state - simplified to essential states
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
-  // Scroll state
+  // UI state
   const [showScrollButton, setShowScrollButton] = useState(false);
   const [manualScrolling, setManualScrolling] = useState(false);
+  const [inputTooLong, setInputTooLong] = useState(false);
   
   // Refs
   const containerRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const loadingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   // Utility function to generate unique message IDs
-  const generateId = () => {
-    return Date.now().toString(36) + Math.random().toString(36).substring(2);
-  };
+  const generateId = () => Date.now().toString(36) + Math.random().toString(36).substring(2);
   
-  // Define the ChatMessage type expected by Gemini API
-  interface ChatMessage {
-    role: 'user' | 'model';
-    parts: string;
-  }
-
-  // Convert messages to the format expected by the Gemini API
-  const convertToGeminiMessages = (msgs: Message[]): ChatMessage[] => {
+  // Convert messages for Gemini API
+  const convertToGeminiMessages = (msgs: Message[]): GeminiChatMessage[] => {
     return msgs.map(msg => ({
       role: msg.role === 'user' ? 'user' : 'model',
       parts: msg.content
     }));
   };
 
-  // Scroll management
+  // Simplified scroll management
   const isNearBottom = useCallback(() => {
     if (!containerRef.current) return true;
-    
     const { scrollHeight, scrollTop, clientHeight } = containerRef.current;
-    // Consider "near bottom" if within 50px of bottom
     return scrollHeight - scrollTop - clientHeight < 50;
   }, []);
   
@@ -104,15 +94,12 @@ const StableChat: React.FC<StableChatProps> = ({
   
   const handleScroll = useCallback(() => {
     if (!containerRef.current) return;
-    
     const nearBottom = isNearBottom();
     setShowScrollButton(!nearBottom);
-    
-    // Only track manual scrolling when not near bottom and not loading
     setManualScrolling(!nearBottom && !isLoading);
   }, [isNearBottom, isLoading]);
   
-  // Effect to set up scroll listener
+  // Simplified and consolidated effects
   useEffect(() => {
     const container = containerRef.current;
     if (container) {
@@ -121,30 +108,26 @@ const StableChat: React.FC<StableChatProps> = ({
     }
   }, [handleScroll]);
   
-  // Effect to scroll to bottom on new messages, respecting manual scrolling
   useEffect(() => {
-    // Always scroll on first load
     if (messages.length === 0) return;
-    
-    // If user is manually scrolling and not at bottom, don't auto-scroll
-    if (manualScrolling) {
-      return;
+    if (!manualScrolling) {
+      scrollToBottom(true);
     }
-    
-    // If new message or loading, scroll to bottom
-    scrollToBottom(true);
   }, [messages, scrollToBottom, manualScrolling]);
   
-  // Cleanup effect for ongoing streams
+  // Cleanup effect
   useEffect(() => {
     return () => {
+      if (loadingTimeoutRef.current) clearTimeout(loadingTimeoutRef.current);
       geminiService.cancelStream();
     };
   }, []);
   
-  // Input handlers
+  // Simplified input handlers
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setInput(e.target.value);
+    const newInput = e.target.value;
+    setInput(newInput);
+    setInputTooLong(newInput.length > 8000);
   };
   
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -154,11 +137,30 @@ const StableChat: React.FC<StableChatProps> = ({
     }
   };
   
-  // Message handlers
+  // Simplified error recovery handler
+  const handleTryShorterPrompt = () => {
+    if (!input.trim() && messages.length >= 2) {
+      const lastUserMessage = [...messages].reverse().find(msg => msg.role === 'user');
+      if (lastUserMessage) {
+        const shortenedContent = lastUserMessage.content.substring(
+          0, Math.floor(lastUserMessage.content.length / 2)
+        ) + "... (shortened)";
+        setInput(shortenedContent);
+      }
+    }
+    setError(null);
+  };
+  
+  // Streamlined message handling
   const handleSendMessage = async () => {
     if (!input.trim() || isLoading) return;
     
-    // Create user message
+    if (input.length > 12000) {
+      setError("Your message is extremely long and may exceed token limits. Try sending a shorter message or breaking it into multiple messages.");
+      return;
+    }
+    
+    // Create messages
     const userMessage: Message = {
       id: generateId(),
       role: 'user',
@@ -167,7 +169,6 @@ const StableChat: React.FC<StableChatProps> = ({
       renderComplete: true
     };
     
-    // Create empty assistant message
     const assistantMessageId = generateId();
     const assistantMessage: Message = {
       id: assistantMessageId,
@@ -182,14 +183,22 @@ const StableChat: React.FC<StableChatProps> = ({
     setInput('');
     setError(null);
     setIsLoading(true);
-    setManualScrolling(false); // Reset manual scrolling to ensure we scroll to the new message
+    setManualScrolling(false);
     
-    // Immediate scroll to bottom (forced)
+    // Force scroll to bottom
     setTimeout(() => scrollToBottom(false), 0);
     
+    // Safety timeout
+    if (loadingTimeoutRef.current) clearTimeout(loadingTimeoutRef.current);
+    loadingTimeoutRef.current = setTimeout(() => handleResponseTimeout(assistantMessageId), 30000);
+    
     try {
-      // Stream the response
+      // Stream the response with simplified callbacks
       const geminiMessages = convertToGeminiMessages([...messages, userMessage]);
+      
+      // Use a ref to track content to prevent duplicate tokens
+      const contentRef = useRef('');
+      contentRef.current = '';
       
       await geminiService.streamChatWithHistory(
         chatId,
@@ -200,23 +209,25 @@ const StableChat: React.FC<StableChatProps> = ({
             console.log('Stream started');
           },
           onToken: (token) => {
+            // Reset timeout on token received
+            if (loadingTimeoutRef.current) {
+              clearTimeout(loadingTimeoutRef.current);
+              loadingTimeoutRef.current = setTimeout(() => handleResponseTimeout(assistantMessageId), 30000);
+            }
+            
             // Update message content with new token
             setMessages(prev => {
               const updatedMessages = [...prev];
               const lastMessage = updatedMessages[updatedMessages.length - 1];
               
               if (lastMessage && lastMessage.id === assistantMessageId) {
-                // Update the message content
-                const newContent = lastMessage.content + token;
+                // Instead of appending to existing content (which could cause duplication),
+                // update the ref and set the full content
+                contentRef.current += token;
+                lastMessage.content = contentRef.current;
                 
-                // Check if content now contains LaTeX
-                const hasLatex = containsLatex(newContent);
-                
-                // Apply updates
-                lastMessage.content = newContent;
-                
-                // If we just detected LaTeX, mark it
-                if (hasLatex && !lastMessage.containsLatex) {
+                // Update LaTeX flag if needed
+                if (containsLatex(contentRef.current) && !lastMessage.containsLatex) {
                   lastMessage.containsLatex = true;
                 }
               }
@@ -224,46 +235,26 @@ const StableChat: React.FC<StableChatProps> = ({
               return updatedMessages;
             });
             
-            // If not manually scrolling, scroll to bottom
+            // Auto-scroll if not manually scrolling
             if (!manualScrolling) {
-              // Use a non-smooth scroll during streaming for better performance
               scrollToBottom(false);
             }
           },
           onComplete: (fullResponse) => {
-            setIsLoading(false);
-            console.log('Stream completed');
-            
-            // Mark message rendering as complete
-            setMessages(prev => {
-              const updatedMessages = [...prev];
-              const lastMessage = updatedMessages[updatedMessages.length - 1];
-              
-              if (lastMessage && lastMessage.id === assistantMessageId) {
-                lastMessage.renderComplete = true;
-              }
-              
-              return updatedMessages;
-            });
-            
-            // Final smooth scroll to bottom
-            if (!manualScrolling) {
-              setTimeout(() => scrollToBottom(true), 100);
-            }
-            
-            // Focus input for next message
-            if (inputRef.current) {
-              inputRef.current.focus();
-            }
+            handleStreamComplete(assistantMessageId, fullResponse);
           },
           onError: (err) => {
-            setIsLoading(false);
-            setError(`Error: ${err.message}`);
-            console.error('Stream error:', err);
+            handleStreamError(assistantMessageId, err);
           }
         }
       );
     } catch (err) {
+      // Handle errors outside the stream callbacks
+      if (loadingTimeoutRef.current) {
+        clearTimeout(loadingTimeoutRef.current);
+        loadingTimeoutRef.current = null;
+      }
+      
       setIsLoading(false);
       if (err instanceof Error) {
         setError(`Error: ${err.message}`);
@@ -274,6 +265,103 @@ const StableChat: React.FC<StableChatProps> = ({
     }
   };
   
+  // Helper functions to clean up handleSendMessage
+  const handleResponseTimeout = (messageId: string) => {
+    console.warn('Loading timeout reached - resetting loading state');
+    setIsLoading(false);
+    
+    setMessages(prev => {
+      const updatedMessages = [...prev];
+      const lastMessage = updatedMessages[updatedMessages.length - 1];
+      
+      if (lastMessage && lastMessage.id === messageId && !lastMessage.renderComplete) {
+        lastMessage.renderComplete = true;
+        if (lastMessage.content === '') {
+          lastMessage.content = 'The response was incomplete. Please try again.';
+        } else {
+          lastMessage.content += ' (Note: This response may be incomplete due to a timeout)';
+        }
+      }
+      
+      return updatedMessages;
+    });
+    
+    setError('Response timed out. The message may be incomplete.');
+  };
+  
+  const handleStreamComplete = (messageId: string, fullResponse: string) => {
+    if (loadingTimeoutRef.current) {
+      clearTimeout(loadingTimeoutRef.current);
+      loadingTimeoutRef.current = null;
+    }
+    
+    console.log('Stream completed - resetting loading state');
+    setIsLoading(false);
+    
+    setMessages(prev => {
+      const updatedMessages = [...prev];
+      const lastMessage = updatedMessages[updatedMessages.length - 1];
+      
+      if (lastMessage && lastMessage.id === messageId) {
+        lastMessage.renderComplete = true;
+        
+        // Ensure content is properly set
+        if ((lastMessage.content.trim() === '' || lastMessage.content === undefined) && 
+            fullResponse && fullResponse.trim() !== '') {
+          lastMessage.content = fullResponse;
+        }
+        
+        // Final verification of LaTeX detection
+        lastMessage.containsLatex = containsLatex(lastMessage.content || '');
+      }
+      
+      return updatedMessages;
+    });
+    
+    // Final smooth scroll and focus input
+    if (!manualScrolling) {
+      setTimeout(() => scrollToBottom(true), 100);
+    }
+    
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  };
+  
+  const handleStreamError = (messageId: string, err: Error) => {
+    if (loadingTimeoutRef.current) {
+      clearTimeout(loadingTimeoutRef.current);
+      loadingTimeoutRef.current = null;
+    }
+    
+    setIsLoading(false);
+    console.error('Stream error:', err);
+    
+    // Set appropriate error message based on error type
+    if (err.name === "EmptyResponseError") {
+      setError("The AI couldn't generate a response. Your message may be too long or complex. Try with a shorter or simpler message.");
+    } else {
+      setError(`Error: ${err.message}`);
+    }
+    
+    // Update the message to show the error
+    setMessages(prev => {
+      const updatedMessages = [...prev];
+      const lastMessage = updatedMessages[updatedMessages.length - 1];
+      
+      if (lastMessage && lastMessage.id === messageId && !lastMessage.renderComplete) {
+        lastMessage.renderComplete = true;
+        
+        if (lastMessage.content.trim() === '') {
+          lastMessage.content = 'An error occurred while generating the response. Please try again.';
+        }
+      }
+      
+      return updatedMessages;
+    });
+  };
+  
+  // Simple action handlers
   const handleClearChat = () => {
     setMessages([]);
     setError(null);
@@ -283,7 +371,6 @@ const StableChat: React.FC<StableChatProps> = ({
   };
   
   const handleRetry = () => {
-    // Remove the last assistant message if it exists
     setMessages(prev => {
       const lastMessage = prev[prev.length - 1];
       if (lastMessage && lastMessage.role === 'assistant') {
@@ -365,13 +452,13 @@ const StableChat: React.FC<StableChatProps> = ({
                     {message.content}
                   </Text>
                 ) : (
-                  <Box className={`stable-chat-markdown ${containsKhmerText(message.content) ? 'khmer-text' : ''}`}>
-                    {message.content ? (
+                  <Box className={`stable-chat-markdown ${containsKhmerText(message.content || '') ? 'khmer-text' : ''}`}>
+                    {message.content && (message.renderComplete || !isLoading) ? (
                       <ReactMarkdown
                         remarkPlugins={[remarkMath]}
                         rehypePlugins={[rehypeKatex]}
                       >
-                        {message.content}
+                        {message.content || 'No content available'}
                       </ReactMarkdown>
                     ) : (
                       <Group justify="center" py="sm" className="stable-chat-loading">
@@ -385,30 +472,47 @@ const StableChat: React.FC<StableChatProps> = ({
               </Paper>
             ))}
             
-            {/* Error Message */}
+            {/* Error Message with recovery options */}
             {error && (
               <Paper className="stable-chat-error">
                 <Group gap="xs" mb={6}>
                   <Text color="red" size="sm" fw={500}>Error</Text>
                 </Group>
                 <Text color="red" size="sm" mb={error ? 'xs' : 0}>{error}</Text>
-                {error && (
-                  <ActionIcon
-                    variant="subtle" 
-                    color="red" 
-                    size="sm"
-                    onClick={handleRetry}
-                  >
-                    <RefreshCw size={14} />
-                    Retry
-                  </ActionIcon>
-                )}
+                <Group mt="xs">
+                  {error.includes("too long") || error.includes("token limit") || error.includes("couldn't generate") ? (
+                    <Button
+                      variant="light" 
+                      color="red" 
+                      size="xs"
+                      onClick={handleTryShorterPrompt}
+                    >
+                      Try with shorter prompt
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="light" 
+                      color="red" 
+                      size="xs"
+                      onClick={handleRetry}
+                    >
+                      Retry
+                    </Button>
+                  )}
+                </Group>
               </Paper>
             )}
             
             {/* End marker for scrolling */}
             <div ref={bottomRef} className="stable-chat-bottom-marker" />
           </Stack>
+        )}
+        
+        {/* Additional loading indicator - shows exact state for debugging */}
+        {isLoading && (
+          <Text size="xs" c="dimmed" ta="center" pos="absolute" bottom={10} left={0} right={0}>
+            Loading response...
+          </Text>
         )}
         
         {/* Scroll to bottom button */}
@@ -428,6 +532,13 @@ const StableChat: React.FC<StableChatProps> = ({
       
       {/* Input Area */}
       <Box className="stable-chat-input-container">
+        {/* Warning for very long inputs */}
+        {inputTooLong && (
+          <Text size="xs" c="orange" mb={5}>
+            Warning: Your message is very long. This might exceed token limits.
+          </Text>
+        )}
+        
         <textarea
           ref={inputRef}
           value={input}
@@ -435,7 +546,7 @@ const StableChat: React.FC<StableChatProps> = ({
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           disabled={isLoading}
-          className="stable-chat-input"
+          className={`stable-chat-input ${inputTooLong ? 'input-too-long' : ''}`}
         />
         <ActionIcon
           color="primary"

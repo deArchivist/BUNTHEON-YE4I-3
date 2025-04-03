@@ -1,14 +1,12 @@
 import React from 'react';
 import { Box } from '@mantine/core';
-import StableChat from '../components/StableChat';
+import ChatInterface from '../components/ChatInterface';
 import { ENV } from '../config/env';
 import '../styles/animations.css';
 import '../styles/fonts.css';
 
 const ChatPage: React.FC = () => {
   const apiKeyConfigured = ENV.GEMINI_API_KEY && ENV.GEMINI_API_KEY !== 'demo_mode';
-  
-  // Calculate height to account for navigation bar (typically 60px)
   const navbarHeight = 60;
   
   return (
@@ -24,7 +22,7 @@ const ChatPage: React.FC = () => {
       bottom: `${navbarHeight}px`,
       zIndex: 100
     }}>
-      <StableChat 
+      <ChatInterface 
         systemPrompt="You are Bun Theon, a helpful AI assistant specialized in education. You can solve problems step-by-step and explain concepts clearly. You support math using LaTeX formatting."
         placeholder="Ask Bun Theon something..."
         showDemoWarning={!apiKeyConfigured}
