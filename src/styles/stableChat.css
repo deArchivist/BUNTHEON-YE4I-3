@@ -12,7 +12,7 @@
   flex: 1;
   overflow-y: auto;
   margin-bottom: 16px;
-  background-color: #F3E9DC; /* Light beige from our palette */
+  background-color: #faf8f5; /* Light beige from our palette */
   border-radius: 8px;
   position: relative;
   scroll-behavior: auto;
@@ -47,15 +47,15 @@
 }
 
 .stable-chat-message-user {
-  background-color: #DAB49D; /* Light tan from our palette */
-  border-color: #C08552; /* Medium brown from our palette */
+  background-color: #f3eae5; /* Light tan from our palette */
+  border-color: #99b7f0; /* Medium brown from our palette */
   align-self: flex-end;
   color: #333;
 }
 
 .stable-chat-message-assistant {
   background-color: white;
-  border-color: #C08552; /* Medium brown from our palette */
+  border-color: #dbc1f7; /* Medium brown from our palette */
   align-self: flex-start;
 }
 
@@ -72,7 +72,7 @@
 .stable-chat-markdown pre {
   padding: 1rem;
   border-radius: 4px;
-  background-color: #F3E9DC; /* Light beige from our palette */
+  background-color: #acb8f7; /* Light beige from our palette */
   overflow-x: auto;
 }
 
@@ -113,7 +113,7 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background-color: #895737; /* Dark brown from our palette */
+  background-color: #99b7f0; /* Dark brown from our palette */
   animation: pulse 1s infinite;
 }
 
@@ -168,7 +168,7 @@
   padding: 10px;
   padding-right: 3rem;
   border-radius: 8px;
-  border: 1px solid #C08552; /* Medium brown from our palette */
+  border: 1px solid #99b7f0; /* Medium brown from our palette */
   outline: none;
   resize: vertical;
   font-family: inherit;

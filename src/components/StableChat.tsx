@@ -301,7 +301,7 @@ const StableChat: React.FC<StableChatProps> = ({
     <Box className="stable-chat-container">
       {/* Header */}
       <Group justify="space-between" mb="md" className="stable-chat-header">
-        <Title order={3}>AI Chat</Title>
+        <Title order={3}>AI Buddy</Title>
         <ActionIcon 
           color="red" 
           variant="subtle" 
@@ -355,7 +355,7 @@ const StableChat: React.FC<StableChatProps> = ({
                   ) : (
                     <>
                       <Bot size={16} />
-                      <Text size="sm" fw={500}>AI Assistant</Text>
+                      <Text size="sm" fw={500}>Bun Theon</Text>
                     </>
                   )}
                 </Group>
