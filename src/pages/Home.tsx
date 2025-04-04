@@ -51,7 +51,7 @@ const Home: React.FC = () => {
     <Stack gap="xl">
       {/* Header */}
       <Box>
-        <Title order={1} size="h3">BUNTHEON</Title>
+        <Title order={1} size="h3">CappyBuddy</Title>
         <Text c="dimmed">Your Educational Companion</Text>
       </Box>
 
