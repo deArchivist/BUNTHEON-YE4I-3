@@ -35,6 +35,7 @@ interface ExamPaper {
   grade: string;
   year: number;
   fileUrl: string;
+  googleDriveUrl: string; // Added Google Drive URL property
 }
 
 interface ExamPapersProps {
@@ -46,47 +47,62 @@ interface ExamPapersProps {
 const initialExamPapers: ExamPaper[] = [
   {
     id: '1',
-    title: 'End of Year Mathematics Exam',
-    subject: 'Mathematics',
+    title: 'BACII Chemistry Mock Exam',
+    subject: 'Chemistry',
     grade: 'Grade 12',
-    year: 2023,
-    fileUrl: '/path/to/file1.pdf'
+    year: 2024,
+    fileUrl: '/path/to/file1.pdf',
+    googleDriveUrl: 'https://drive.google.com/file/d/1QF2I6ObtgSedmjGVPVY8gatbxMq7EJXy/view?usp=drive_link' // Placeholder Google Drive link
   },
   {
     id: '2',
-    title: 'Physics - Mechanics Final Exam',
-    subject: 'Physics',
-    grade: 'Grade 11',
+    title: 'BACII Chemistry Second Mock Exam',
+    subject: 'Chemistry',
+    grade: 'Grade 12',
     year: 2023,
-    fileUrl: '/path/to/file2.pdf'
+    fileUrl: '/path/to/file2.pdf',
+    googleDriveUrl: 'https://drive.google.com/file/d/1EOm_p62SQ1FtbUtucI4Vo9RoRp_Z7ZLx/view?usp=drive_link' // Placeholder Google Drive link
   },
   {
     id: '3',
-    title: 'Biology Mid-term Assessment',
+    title: 'BACII Biology Test Paper',
     subject: 'Biology',
     grade: 'Grade 12',
     year: 2022,
-    fileUrl: '/path/to/file3.pdf'
+    fileUrl: '/path/to/file3.pdf',
+    googleDriveUrl: 'https://drive.google.com/file/d/1jxaIoSuDChx0Cg2cH_vi5x9W5JqJLWgT/view?usp=drive_link' // Placeholder Google Drive link
   },
   {
     id: '4',
-    title: 'Chemistry End of Term Test',
-    subject: 'Chemistry',
-    grade: 'Grade 10',
+    title: 'BACII Biology Test Paper #2',
+    subject: 'Biology',
+    grade: 'Grade 12',
     year: 2023,
-    fileUrl: '/path/to/file4.pdf'
+    fileUrl: '/path/to/file4.pdf',
+    googleDriveUrl: 'https://drive.google.com/file/d/1MUcT5JkxJX1lg9TULSwZ-lyqf0f8TL4V/view?usp=drive_link' // Placeholder Google Drive link
   },
   {
     id: '5',
-    title: 'Literature Analysis Exam',
-    subject: 'Literature',
-    grade: 'Grade 11',
+    title: 'Grade 9 Earth Science Final Semester Exam',
+    subject: 'Earth Science',
+    grade: 'Grade 9',
     year: 2022,
-    fileUrl: '/path/to/file5.pdf'
+    fileUrl: '/path/to/file5.pdf',
+    googleDriveUrl: 'https://drive.google.com/file/d/1jBi1Lgx1Sylx80_-QEQRBT-t2_diQ1du/view?usp=drive_link' // Placeholder Google Drive link
   },
+  {
+    id: '6',
+    title: 'Grade 9 Moral Civics Final Semester Exam',
+    subject: 'Moral Civics',
+    grade: 'Grade 9',
+    year: 2021,
+    fileUrl: '/path/to/file5.pdf',
+    googleDriveUrl: 'https://drive.google.com/file/d/1fWxAPxb7wjF1-njRX0r7MFYAgDwZLZuB/view?usp=drive_link' // Placeholder Google Drive link
+  }, 
+  
 ];
 
-const subjects = ["All", "Mathematics", "Physics", "Chemistry", "Biology", "Literature", "History", "Geography"];
+const subjects = ["All", "Mathematics", "Physics", "Chemistry", "Biology", "Literature", "History", "Geography", "Earth Science", "Moral Civics"];
 const years = ["All", "2023", "2022", "2021", "2020"];
 const grades = ["All", "Grade 9", "Grade 10", "Grade 11", "Grade 12"];
 
@@ -157,9 +173,9 @@ const ExamPapers: React.FC<ExamPapersProps> = ({ isEmbedded = false, forcedShowF
     );
   };
 
-  // Download paper (placeholder function)
+  // Updated function to open Google Drive link in a new tab
   const downloadPaper = (paper: ExamPaper) => {
-    alert(`Downloading ${paper.title}... (This is a placeholder. In a real app, the file would be downloaded.)`);
+    window.open(paper.googleDriveUrl, '_blank');
   };
 
   // Clear all filters
