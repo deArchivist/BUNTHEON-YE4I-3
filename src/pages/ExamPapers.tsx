@@ -56,7 +56,7 @@ const initialExamPapers: ExamPaper[] = [
   },
   {
     id: '2',
-    title: 'BACII Chemistry Second Mock Exam',
+    title: 'BACII Chemistry Exam',
     subject: 'Chemistry',
     grade: 'Grade 12',
     year: 2023,
@@ -83,7 +83,7 @@ const initialExamPapers: ExamPaper[] = [
   },
   {
     id: '5',
-    title: 'Grade 9 Earth Science Final Semester Exam',
+    title: 'Grade 9 Earth Science Exam',
     subject: 'Earth Science',
     grade: 'Grade 9',
     year: 2022,
@@ -92,7 +92,7 @@ const initialExamPapers: ExamPaper[] = [
   },
   {
     id: '6',
-    title: 'Grade 9 Moral Civics Final Semester Exam',
+    title: 'Grade 9 Moral Civics Semester Exam',
     subject: 'Moral Civics',
     grade: 'Grade 9',
     year: 2021,
