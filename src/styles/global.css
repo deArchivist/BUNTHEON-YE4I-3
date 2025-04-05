@@ -9,6 +9,14 @@
   box-sizing: border-box;
 }
 
+/* Disable text selection across the entire application */
+* {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
 /* Hide scrollbars across browsers while maintaining scrolling functionality */
 /* For webkit browsers (Chrome, Safari, newer versions of Opera and Edge) */
 ::-webkit-scrollbar {
